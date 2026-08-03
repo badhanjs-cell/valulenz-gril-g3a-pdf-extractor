@@ -1,0 +1,495 @@
+{
+  "name": "VALULENZ GRIL G3A — Snapshot 7 PDF Text Extraction Worker v1",
+  "flow": [
+    {
+      "id": 1,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "handleErrors": true,
+        "useNewZLibDeCompress": true
+      },
+      "mapper": {
+        "url": "https://wmxbdirvlwuagouraobr.supabase.co/rest/v1/rpc/recover_stalled_text_extractions_v1",
+        "serializeUrl": false,
+        "method": "post",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "REPLACE_WITH_SUPABASE_SECRET_KEY"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "authUser": "",
+        "authPass": "",
+        "timeout": "120",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "useMtls": false,
+        "followAllRedirects": false,
+        "contentType": "application/json",
+        "data": "{\"p_actor\":\"MAKE_GRIL_G3A_PDF_RECOVERY\"}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0,
+          "name": "Recover stalled G3A extraction leases"
+        },
+        "restore": {
+          "expect": {
+            "method": {
+              "mode": "chose",
+              "label": "POST"
+            },
+            "bodyType": {
+              "label": "Raw"
+            },
+            "contentType": {
+              "label": "application/json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "handleErrors": true,
+        "useNewZLibDeCompress": true
+      },
+      "mapper": {
+        "url": "https://wmxbdirvlwuagouraobr.supabase.co/rest/v1/rpc/enqueue_verified_text_extractions_v1",
+        "serializeUrl": false,
+        "method": "post",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "REPLACE_WITH_SUPABASE_SECRET_KEY"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "authUser": "",
+        "authPass": "",
+        "timeout": "120",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "useMtls": false,
+        "followAllRedirects": false,
+        "contentType": "application/json",
+        "data": "{\"p_limit\":50,\"p_actor\":\"MAKE_GRIL_G3A_PDF_SCHEDULER\"}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0,
+          "name": "Enqueue approved G2 snapshots for G3A"
+        },
+        "restore": {
+          "expect": {
+            "method": {
+              "mode": "chose",
+              "label": "POST"
+            },
+            "bodyType": {
+              "label": "Raw"
+            },
+            "contentType": {
+              "label": "application/json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "handleErrors": true,
+        "useNewZLibDeCompress": true
+      },
+      "mapper": {
+        "url": "https://wmxbdirvlwuagouraobr.supabase.co/rest/v1/rpc/claim_text_extraction_job_by_snapshot_v1",
+        "serializeUrl": false,
+        "method": "post",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "REPLACE_WITH_SUPABASE_SECRET_KEY"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "authUser": "",
+        "authPass": "",
+        "timeout": "120",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "useMtls": false,
+        "followAllRedirects": false,
+        "contentType": "application/json",
+        "data": "{\"p_snapshot_id\":7,\"p_worker_id\":\"MAKE_GRIL_G3A_PDF_WORKER\",\"p_lease_seconds\":3600}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0,
+          "name": "Claim snapshot 7 PDF extraction job"
+        },
+        "restore": {
+          "expect": {
+            "method": {
+              "mode": "chose",
+              "label": "POST"
+            },
+            "bodyType": {
+              "label": "Raw"
+            },
+            "contentType": {
+              "label": "application/json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "handleErrors": true,
+        "useNewZLibDeCompress": true
+      },
+      "mapper": {
+        "url": "REPLACE_WITH_PDF_EXTRACTOR_URL/extract-regulatory-pdf",
+        "serializeUrl": false,
+        "method": "post",
+        "headers": [
+          {
+            "name": "X-Extractor-Key",
+            "value": "REPLACE_WITH_PDF_EXTRACTOR_API_KEY"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "authUser": "",
+        "authPass": "",
+        "timeout": "300",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "useMtls": false,
+        "followAllRedirects": false,
+        "contentType": "application/json",
+        "data": "{\n  \"snapshot_id\": {{3.data.snapshot_id}},\n  \"storage_bucket\": \"{{3.data.storage_bucket}}\",\n  \"storage_object_path\": \"{{3.data.storage_object_path}}\",\n  \"expected_sha256\": \"{{3.data.content_sha256}}\",\n  \"expected_byte_size\": {{3.data.byte_size}},\n  \"language_hint\": \"{{3.data.original_language}}\",\n  \"resolved_url\": \"{{3.data.resolved_url}}\",\n  \"minimum_characters\": 1000\n}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0,
+          "name": "Extract and verify PDF text on Railway"
+        },
+        "restore": {
+          "expect": {
+            "method": {
+              "mode": "chose",
+              "label": "POST"
+            },
+            "bodyType": {
+              "label": "Raw"
+            },
+            "contentType": {
+              "label": "application/json"
+            }
+          }
+        }
+      },
+      "filter": {
+        "name": "Snapshot 7 valid PDF claim",
+        "conditions": [
+          [
+            {
+              "a": "{{3.data.claimed}}",
+              "b": "true",
+              "o": "boolean:equal"
+            }
+          ],
+          [
+            {
+              "a": "{{3.data.snapshot_id}}",
+              "b": "7",
+              "o": "number:equal"
+            }
+          ],
+          [
+            {
+              "a": "{{3.data.mime_type}}",
+              "b": "application/pdf",
+              "o": "text:equal"
+            }
+          ],
+          [
+            {
+              "a": "{{3.data.storage_bucket}}",
+              "b": "gril-regulatory-originals",
+              "o": "text:equal"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "mapper": null,
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0,
+          "name": "Route extraction result"
+        }
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 6,
+              "module": "http:ActionSendData",
+              "version": 3,
+              "parameters": {
+                "handleErrors": true,
+                "useNewZLibDeCompress": true
+              },
+              "mapper": {
+                "url": "https://wmxbdirvlwuagouraobr.supabase.co/rest/v1/rpc/register_extracted_text_v1",
+                "serializeUrl": false,
+                "method": "post",
+                "headers": [
+                  {
+                    "name": "apikey",
+                    "value": "REPLACE_WITH_SUPABASE_SECRET_KEY"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "qs": [],
+                "bodyType": "raw",
+                "parseResponse": true,
+                "authUser": "",
+                "authPass": "",
+                "timeout": "300",
+                "shareCookies": false,
+                "ca": "",
+                "rejectUnauthorized": true,
+                "followRedirect": true,
+                "useQuerystring": false,
+                "gzip": true,
+                "useMtls": false,
+                "followAllRedirects": false,
+                "contentType": "application/json",
+                "data": "{\n  \"p_job_id\": \"{{3.data.job_id}}\",\n  \"p_lease_token\": \"{{3.data.lease_token}}\",\n  \"p_extraction_method\": \"{{4.data.extraction_method}}\",\n  \"p_extraction_engine\": \"{{4.data.extraction_engine}}\",\n  \"p_extraction_engine_version\": \"{{4.data.extraction_engine_version}}\",\n  \"p_extracted_text\": \"{{escapeJSON(4.data.extracted_text)}}\",\n  \"p_extracted_text_sha256\": \"{{4.data.extracted_text_sha256}}\",\n  \"p_character_count\": {{4.data.character_count}},\n  \"p_page_count\": {{4.data.page_count}},\n  \"p_language_code\": \"{{4.data.language_code}}\",\n  \"p_extraction_confidence\": {{4.data.extraction_confidence}},\n  \"p_extraction_metadata\": {\n    \"scenario\": \"VALULENZ_GRIL_G3A_PDF_Text_Extraction_Worker_Snapshot7_v1\",\n    \"snapshot_id\": {{3.data.snapshot_id}},\n    \"source_sha256_verified\": true,\n    \"source_byte_size\": {{4.data.source_byte_size}},\n    \"pages_with_text\": {{4.data.pages_with_text}},\n    \"text_layer_found\": {{4.data.text_layer_found}},\n    \"ocr_used\": {{4.data.ocr_used}},\n    \"storage_mime_metadata_ignored\": true\n  },\n  \"p_actor\": \"MAKE_GRIL_G3A_PDF_WORKER\"\n}"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1500,
+                  "y": 0,
+                  "name": "Register immutable extracted-text artifact"
+                },
+                "restore": {
+                  "expect": {
+                    "method": {
+                      "mode": "chose",
+                      "label": "POST"
+                    },
+                    "bodyType": {
+                      "label": "Raw"
+                    },
+                    "contentType": {
+                      "label": "application/json"
+                    }
+                  }
+                }
+              },
+              "filter": {
+                "name": "Verified PDF text extracted",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{4.data.success}}",
+                      "b": "true",
+                      "o": "boolean:equal"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{4.data.source_sha256}}",
+                      "b": "{{3.data.content_sha256}}",
+                      "o": "text:equal"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{4.data.extraction_method}}",
+                      "b": "PDF_TEXT",
+                      "o": "text:equal"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{4.data.character_count}}",
+                      "b": "1000",
+                      "o": "number:greater"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 7,
+              "module": "http:ActionSendData",
+              "version": 3,
+              "parameters": {
+                "handleErrors": true,
+                "useNewZLibDeCompress": true
+              },
+              "mapper": {
+                "url": "https://wmxbdirvlwuagouraobr.supabase.co/rest/v1/rpc/record_text_extraction_failure_v1",
+                "serializeUrl": false,
+                "method": "post",
+                "headers": [
+                  {
+                    "name": "apikey",
+                    "value": "REPLACE_WITH_SUPABASE_SECRET_KEY"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "qs": [],
+                "bodyType": "raw",
+                "parseResponse": true,
+                "authUser": "",
+                "authPass": "",
+                "timeout": "120",
+                "shareCookies": false,
+                "ca": "",
+                "rejectUnauthorized": true,
+                "followRedirect": true,
+                "useQuerystring": false,
+                "gzip": true,
+                "useMtls": false,
+                "followAllRedirects": false,
+                "contentType": "application/json",
+                "data": "{\n  \"p_job_id\": \"{{3.data.job_id}}\",\n  \"p_lease_token\": \"{{3.data.lease_token}}\",\n  \"p_error_code\": \"{{4.data.error_code}}\",\n  \"p_error_message\": \"{{escapeJSON(4.data.error_message)}}\",\n  \"p_actor\": \"MAKE_GRIL_G3A_PDF_WORKER\"\n}"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1500,
+                  "y": 250,
+                  "name": "Record G3A PDF extraction failure"
+                },
+                "restore": {
+                  "expect": {
+                    "method": {
+                      "mode": "chose",
+                      "label": "POST"
+                    },
+                    "bodyType": {
+                      "label": "Raw"
+                    },
+                    "contentType": {
+                      "label": "application/json"
+                    }
+                  }
+                }
+              },
+              "filter": {
+                "name": "PDF extraction failed safely",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{4.data.success}}",
+                      "b": "false",
+                      "o": "boolean:equal"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario_name": "VALULENZ_GRIL_G3A_PDF_Text_Extraction_Worker_Snapshot7_v1",
+    "package_required": "GRIL-G3A-v1.0",
+    "target_snapshot_id": 7,
+    "target_regulatory_document_id": 2,
+    "authentication": {
+      "supabase": "Replace REPLACE_WITH_SUPABASE_SECRET_KEY with the current sb_secret_* key in the apikey header only.",
+      "extractor": "Replace the Railway URL and X-Extractor-Key placeholder."
+    },
+    "replace_placeholders": [
+      "REPLACE_WITH_SUPABASE_SECRET_KEY",
+      "REPLACE_WITH_PDF_EXTRACTOR_URL",
+      "REPLACE_WITH_PDF_EXTRACTOR_API_KEY"
+    ],
+    "fail_closed": true,
+    "notes": [
+      "This controlled blueprint claims snapshot 7 only.",
+      "The Railway extractor fetches the immutable private Storage object itself.",
+      "The extractor ignores incorrect Storage MIME metadata, validates %PDF-, exact byte size and SHA-256, then extracts the embedded text layer with PyMuPDF.",
+      "OCR is deliberately not enabled in this v1 worker."
+    ]
+  }
+}
