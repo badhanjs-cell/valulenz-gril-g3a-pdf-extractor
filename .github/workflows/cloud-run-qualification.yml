@@ -1,0 +1,100 @@
+name: GRIL G3A PDF Extractor Cloud Run Qualification
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - cloudbuild.yaml
+      - requirements.txt
+      - main.py
+      - test_cloud_run_contract.py
+      - .github/workflows/cloud-run-qualification.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile production app
+        run: python -m py_compile main.py
+
+      - name: Cloud Run source contracts
+        run: python -m unittest -v test_cloud_run_contract.py
+
+      - name: Import production app
+        run: |
+          python - <<'PY'
+          import main
+          assert main.app is not None
+          assert main.APP_VERSION == "VALULENZ-G3A-PDF-EXTRACTOR-v1.0.0"
+          routes={getattr(r,"path",None) for r in main.app.routes}
+          assert "/health" in routes
+          assert "/extract-regulatory-pdf" in routes
+          print(main.APP_VERSION)
+          PY
+
+      - name: Build Cloud Run container
+        run: docker build --pull -t gril-g3a-pdf-extractor:qualification .
+
+      - name: Start Cloud Run container
+        run: |
+          docker run --rm -d \
+            --name gril-g3a-pdf-extractor \
+            -e PORT=8080 \
+            -e SUPABASE_PROJECT_URL=https://example.supabase.co \
+            -e SUPABASE_SECRET_KEY=qualification-secret \
+            -e PDF_EXTRACTOR_API_KEY=qualification-key \
+            -p 8080:8080 \
+            gril-g3a-pdf-extractor:qualification
+
+      - name: Verify health
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error http://127.0.0.1:8080/health >/tmp/health.json; then
+              python - <<'PY'
+          import json
+          with open("/tmp/health.json") as f:
+              payload=json.load(f)
+          assert payload["success"] is True
+          assert payload["configured"] is True
+          assert payload["version"] == "VALULENZ-G3A-PDF-EXTRACTOR-v1.0.0"
+          PY
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs gril-g3a-pdf-extractor
+          exit 1
+
+      - name: Verify protected extraction rejects wrong key
+        run: |
+          status="$(curl --silent --show-error -o /tmp/protected.json -w '%{http_code}' \
+            -X POST http://127.0.0.1:8080/extract-regulatory-pdf \
+            -H 'content-type: application/json' \
+            -H 'X-Extractor-Key: wrong-key' \
+            -d '{"snapshot_id":1,"storage_bucket":"b","storage_object_path":"x.pdf","expected_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","expected_byte_size":1}')"
+          test "$status" = "401"
+
+      - name: Qualification marker
+        run: echo GRIL_G3A_PDF_EXTRACTOR_CLOUD_RUN_PRODUCTION_CANDIDATE_GREEN
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker logs gril-g3a-pdf-extractor || true
